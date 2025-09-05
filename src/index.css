@@ -1,0 +1,63 @@
+@import url("https://cdn.syncfusion.com/ej2/material.css");
+form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap:1rem;
+  align-items: center;
+  padding:1rem;
+}
+main{
+  display: flex;
+  align-items: center;
+  gap:2rem
+}
+select{
+  border-radius: 5px;
+  background-color: white;
+  border:none;
+  padding: 1rem;
+}
+.button-text{
+  font-size: 4rem;
+  font-family: 'TW cent', Tahoma, Geneva, Verdana, sans-serif;
+}
+.card{
+  width:400px;
+  height: 400px;
+  background-color: rgb(251, 250, 252);
+  border-radius: 18PX;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: scroll;
+  scrollbar-width:thin ;
+} 
+.card:hover{
+  box-shadow: 0 0 20px 0.5px #673ab7;
+}
+.dropdowns-container{
+  display: flex;
+  flex-direction: row;
+}
+.event-grouper{
+  width:100%;
+  display: flex;
+  justify-content:space-around;
+  padding: 1rem;
+}
+.e-custom-purple {
+    background-color: #ffe5e5;
+    color: #673ab7;
+    border-radius: 50%;
+}
+@media(min-width:35rem){
+  main{
+    width:100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+}
