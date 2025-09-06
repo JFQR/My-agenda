@@ -11,24 +11,21 @@ export type DateStructure = {
 }
 type DropDownType = {
     sendDate:(date:DateStructure)=>void
+    create:boolean
 }
 
+import ManageStorage from "../Tools/ManageStorage"
 
-function DropDown({sendDate}:DropDownType){
+function DropDown({sendDate, create}:DropDownType){
+
+    const manageStorage = new ManageStorage
 
     useEffect(()=>{
-        //*************************************** */
-        const id = localStorage.getItem("id")
-        if(id){
-             //*************************************** */
-            const parsedId:number = parseInt(id)
-            setExistingId(parsedId)
-             //*********************************************** */
-            const storedDates = localStorage.getItem("dates")
-            let existingDates: string[] = storedDates ? JSON.parse(storedDates) : [];
+        if(!create){
+            let existingDates: string[] = manageStorage.getItem("dates")
             if(existingDates){
-                let myDate = existingDates[parsedId]
-                console.log("date in fropdown: ",myDate)
+                console.log(existingDates)
+                let myDate = existingDates[newId]
                 let datePieces:string[] = myDate.split("-")
                 setYear(datePieces[0])
                 setMonth(datePieces[1])
@@ -40,7 +37,7 @@ function DropDown({sendDate}:DropDownType){
     const [ year, setYear ] = useState<string>()
     const [ month, setMonth ] = useState<string>()
     const [ day, setDay ] = useState<string>()
-    const [ existingId, setExistingId ] = useState<number>()
+    const [ newId, setNewId ] = useState<number>(()=>manageStorage.getId())
     const monthSelect = useRef<HTMLSelectElement>(null)
     const daySelect = useRef<HTMLSelectElement>(null)
 

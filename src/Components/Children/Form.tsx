@@ -10,14 +10,13 @@ import DropDown from './DropDown';
 import ManageStorage from '../Tools/ManageStorage';
 
 type FormProps = {
-  onClose: () => void
-
+    onClose: () => void
+    create: boolean
 };
 
-function Form({onClose}:FormProps){
+function Form({onClose, create}:FormProps){
 
     const manageStorage = new ManageStorage
-    let currentId:number = manageStorage.getId()
     
     const [ newId, setNewId ] = useState<number>(()=>manageStorage.getId())
 
@@ -32,7 +31,8 @@ function Form({onClose}:FormProps){
 
 
     useEffect(()=>{
-        if(newId){
+
+        if(newId && create === false){
             setEnableSubmit(false)
 
             let existingTitles:string[] = manageStorage.getItem("titles")
@@ -42,6 +42,7 @@ function Form({onClose}:FormProps){
             setDescription(existingDescs[newId])
 
         }
+        
     },[])
 
     function recieveDate(datePortion){
@@ -63,7 +64,7 @@ function Form({onClose}:FormProps){
 
         let existingItem = manageStorage.getItem(itemToStore)
         //if ther's already content, update it:
-        if(newId && title && description){
+        if(!create && title && description){
 
             existingItem.splice(newId,1,title)
             manageStorage.setItem("titles", existingItem)
@@ -94,29 +95,29 @@ function Form({onClose}:FormProps){
         await storeTitleAndDesc("descriptions")
 
         const formatedDate = `${newDate.year}-${newDate.month}-${newDate.day}`;
-
+        console.log("formated date: ",create)
         const existingDates = manageStorage.getItem("dates")
 
         //the date has been modified:
-        if(newId && formatedDate !== "--"){
+        if(!create && formatedDate !== "--"){
+            console.log("update1")
             existingDates.splice(newId,1,formatedDate)
             manageStorage.setItem("dates",existingDates)
         //the form has been modified but not the date:
-        }else if(newId && formatedDate === "--"){
+        }else if(!create && formatedDate === "--"){
+            console.log("update2")
             return
-
         //creating a new date:
         }else{
+            console.log("create")
             const updatedDates = [...existingDates, formatedDate];
 
             manageStorage.setItem("dates",updatedDates);            
         } 
-        window.location.assign('/');
+        //window.location.assign("/")
     }
 
     function handleClose(){
-
-        localStorage.removeItem("id")
         onClose()
     }
 
@@ -138,7 +139,7 @@ function Form({onClose}:FormProps){
                 <label htmlFor="Title">Title</label>
             </FloatLabel>
 
-            <DropDown sendDate={recieveDate} />
+            <DropDown sendDate={recieveDate} create={create}/>
                     
 
             <FloatLabel>
@@ -161,13 +162,13 @@ function Form({onClose}:FormProps){
                     
             <div style={{gap:"0.5rem"}}>
                 <Button label="Cancel" 
-                    onClick={()=>handleClose()} 
+                    onClick={handleClose} 
                     
                     severity="danger" rounded raised
                 />
 
                 <Button 
-                    type="button" 
+                    type="submit" 
                     id="submit-btn" 
                     disabled={enableSubmit} 
                     onClick={handleSubmit} 

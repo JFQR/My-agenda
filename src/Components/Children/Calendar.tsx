@@ -35,7 +35,7 @@ function Calendar() {
                     value={dateValue} 
                 />
             </div>
-        ):(<p>loading...</p>)}
+        ):(<></>)}
 
     </>)
 }export default Calendar

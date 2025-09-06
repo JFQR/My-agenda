@@ -4,7 +4,11 @@ import { Button } from 'primereact/button';
 
 import Form from './Form'
 
+import ManageStorage from '../Tools/ManageStorage';
+
 function EventManager(){
+    const manageStorage = new ManageStorage
+
     const [ myTitles, setTitles ] = useState<string[]>([])
     const [ myDescriptions, setDescriptions ] = useState<string[]>([])
     const [ myDates, setDates ] = useState<string[]>([])
@@ -14,19 +18,16 @@ function EventManager(){
 
     useEffect(()=>{
         //obtains the info from local storage
-        const titles: string | null = localStorage.getItem("titles")
-        const descriptions: string | null = localStorage.getItem("descriptions")
-        const dates: string | null = localStorage.getItem("dates")
+        const titles: string[] = manageStorage.getItem("titles")
+        const descriptions: string[] = manageStorage.getItem("descriptions")
+        const dates: string[] = manageStorage.getItem("dates")
         //sets the info of:
         //the titles
-        let existingTitles: string[] = titles ? JSON.parse(titles) : [];
-        setTitles(prev=>([...prev,...existingTitles]))
+        setTitles(prev=>([...prev,...titles]))
         //the descriptions
-        let existingDescriptions: string[] = descriptions ? JSON.parse(descriptions) : [];
-        setDescriptions(prev=>([...prev,...existingDescriptions]))
+        setDescriptions(prev=>([...prev,...descriptions]))
         //the dates
-        let existingDates: string[] = dates ? JSON.parse(dates) : [];
-        setDates(prev=>([...prev,...existingDates]))
+        setDates(prev=>([...prev,...dates]))
     },[])
 
     function handleModify(id){
@@ -35,41 +36,44 @@ function EventManager(){
         setShowForm(true)
     }
 
-    function handleDelete(id){
-         //*************************************** */
-        let currentTitle:string | null= localStorage.getItem("titles")
-        let parsedTitle:string[] = currentTitle ? JSON.parse(currentTitle) : []
-        parsedTitle.splice(id,1)
-         //*************************************** */
-        localStorage.setItem("titles",JSON.stringify(parsedTitle))
- //*************************************** */
-        let currentDesc:string | null= localStorage.getItem("descriptions")
-        let parsedDesc:string[] | null = currentDesc ? JSON.parse(currentDesc) : []
-        parsedDesc?.splice(id,1)
-         //*************************************** */
-        localStorage.setItem("descriptions",JSON.stringify(parsedDesc))
- //*************************************** */
-        let currentDates:string | null= localStorage.getItem("dates")
-        let parsedDates:string[] = currentDates ? JSON.parse(currentDates) : []
-        parsedDates?.splice(id,1)
-         //*************************************** */
-        localStorage.setItem("dates",JSON.stringify(parsedDates))
+    function handleDelete(id){ 
+        let parsedTitle:string[] = manageStorage.getItem("titles")
+        parsedTitle.splice(id,1,"deleted")
+        manageStorage.setItem("titles", parsedTitle)
+
+        let parsedDesc:string[] = manageStorage.getItem("descriptions")
+        parsedDesc.splice(id,1,"deleted")
+        manageStorage.setItem("descriptions", parsedDesc)
+
+        let parsedDates:string[] = manageStorage.getItem("dates")
+        parsedDates.splice(id,1,"deleted")
+        manageStorage.setItem("dates", parsedDates)
 
         window.location.assign('/');
     }
 
     return(<div className="card">
 
-        {myDates.length === 0 ? (<p>No events added yet</p>): myDates.map((date,index)=>{return(
-            <div className="event-grouper">
-                <p>{date}</p>
-                <p>{myTitles[index]}</p>
-                <Button label="Modify" rounded raised onClick={()=>handleModify(index)}/>
-                <Button label="Delete" rounded raised onClick={()=>handleDelete(index)}severity="danger"/>
-            </div>
-        )})}
+        {(myDates.length === 0 || myDates.every(date=> date === myDates[0])) ? 
+            
+            (<p>No events added yet</p>) : 
+            
+            myDates.map((date, index) => {
+                if (date !== "deleted") {
+                    return (
+                    <div className="event-grouper" key={index}>
+                        <p>{date}</p>
+                        <p>{myTitles[index]}</p>
+                        <Button label="Modify" rounded raised onClick={() => handleModify(index)} />
+                        <Button label="Delete" rounded raised onClick={() => handleDelete(index)} severity="danger" />
+                    </div>
+                    );
+                } else {
+                    return null
+                }
+            })}
         
-        {showForm && (<Form onClose={offForm}/>)}
+        {showForm && (<Form onClose={offForm} create={false}/>)}
     </div>
     )
 }export default EventManager

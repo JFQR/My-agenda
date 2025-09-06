@@ -17,7 +17,7 @@ function ParentComponent(){
             
             <button className="card button-text" onClick={()=>setShowForm(true)}>Add new event</button>
             
-            {showForm && (<Form onClose={offForm}/>)}
+            {showForm && (<Form onClose={offForm} create={true}/>)}
             <EventManager />
             <Calendar/>
         </main>
